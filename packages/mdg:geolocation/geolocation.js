@@ -4,6 +4,9 @@ var watchingPosition = false;
 // current location variable and dependency
 var location = new ReactiveVar(null);
 
+// current location variable and dependency
+var isReady = new ReactiveVar(false);
+
 // error variable and dependency
 var error = new ReactiveVar(null);
 
@@ -15,15 +18,18 @@ var options = {
 
 var onError = function (newError) {
   error.set(newError);
+  isReady.set(true);
 };
 
 var onPosition = function (newLocation) {
   location.set(newLocation);
   error.set(null);
+  isReady.set(true);
 };
 
 var startWatchingPosition = function () {
   if (! watchingPosition && navigator.geolocation) {
+    isReady.set(false);
     navigator.geolocation.watchPosition(onPosition, onError, options);
     watchingPosition = true;
   }
@@ -75,5 +81,10 @@ Geolocation = {
     }
 
     return null;
+  },
+  
+  isReady: function() {
+    return isReady.get();
   }
+  
 };
